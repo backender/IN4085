@@ -19,7 +19,7 @@ imgPixel = [imgSize imgSize];
 
 %% =========== Part 1: Data Selection & Preprocessing =============
 
-rdata = prnist([0:9],[1:5:1000]);
+rdata = prnist([0:9],[1:50:1000]);
 disp([newline 'Data ready'])
 pause;
 
@@ -55,44 +55,44 @@ disp([newline 'Errors for individual classifiers'])
 testc(test_data,V);
 
 %% Feature selection
-% featureReduction=5;
-% Fi =train_data*featseli([],'in-in',featureReduction);
-% Ff =train_data*featself([],'in-in',featureReduction);
-% Fo =train_data*featselo([],'in-in',featureReduction);
-% 
-% Vi = train_data*Fi;
-% Vf = train_data*Ff;
-% Vo = train_data*Fo;
-% 
-% Ti = test_data*Fi;
-% Tf = test_data*Ff;
-% To = test_data*Fo;
-% 
-% disp([newline 'Errors with featseli'])
-% testc(Ti,Vi);
-% disp([newline 'Errors with featself'])
-% testc(Tf,Vf);
-% disp([newline 'Errors with featselo'])
-% testc(To,Vo);
+featureReduction=5;
+Fi =train_data*featseli([],'in-in',featureReduction);
+Ff =train_data*featself([],'in-in',featureReduction);
+Fo =train_data*featselo([],'in-in',featureReduction);
 
-% %invidfeatures_mapping = featseli(train_data);
-% %fi_train_data = train_data * invidfeatures_mapping;
-% %fi_test_data = test_data * invidfeatures_mapping;
-% %V2 = f_train_data*W;
-% %disp([newline 'Errors with featureself for individual classifiers'])
-% %testc(f_test_data,V2);
-% %
-% %VALL = [V2{:}];
-% %         % Define combiners
-% % WC = {prodc,meanc,medianc,maxc,minc,votec};
-% %         % Combine (result is cell array of combined classifiers)
-% % VC = VALL * WC;
-% %         % Test them all
-% % disp([newline 'Errors for combining rules with featureself'])
-% %testc(f_test_data,VC)
+Vi = train_data*Fi;
+Vf = train_data*Ff;
+Vo = train_data*Fo;
+
+Ti = test_data*Fi;
+Tf = test_data*Ff;
+To = test_data*Fo;
+
+disp([newline 'Errors with featseli'])
+testc(Ti,Vi);
+disp([newline 'Errors with featself'])
+testc(Tf,Vf);
+disp([newline 'Errors with featselo'])
+testc(To,Vo);
+
+%invidfeatures_mapping = featseli(train_data);
+%fi_train_data = train_data * invidfeatures_mapping;
+%fi_test_data = test_data * invidfeatures_mapping;
+%V2 = f_train_data*W;
+%disp([newline 'Errors with featureself for individual classifiers'])
+%testc(f_test_data,V2);
+%
+%VALL = [V2{:}];
+%         % Define combiners
+% WC = {prodc,meanc,medianc,maxc,minc,votec};
+%         % Combine (result is cell array of combined classifiers)
+% VC = VALL * WC;
+%         % Test them all
+% disp([newline 'Errors for combining rules with featureself'])
+%testc(f_test_data,VC)
 
 %% W/ PCA 85%
-p = pcam([],0.85);
+p = pcam([],0.85)
 
 w2p = p*w2;
 w3p = p*qdc;
@@ -102,42 +102,10 @@ w6p = p*svc;
 w7p = p*fisherc;
 w8p = p*naivebc;
 
-Wp = {w2p,w3p,w4p,w5p,w6p,w7p,w8p};
-Vp = train_data*Wp;
-disp([newline 'Errors for individual classifiers with PCA 85'])
-testc(test_data,Vp);
+Wp = At*{U,U1,U2,U3,U4,U5,U6,U7,U8,U9,U10,U11,U12};
 
-%% W/ PCA 99%
-p = pcam([],0.99);
+testc(As,Wp)
 
-w2p = p*w2;
-w3p = p*qdc;
-w4p = p*knnc;
-w5p = p*parzenc;
-w6p = p*svc;
-w7p = p*fisherc;
-w8p = p*naivebc;
-
-Wp = {w2p,w3p,w4p,w5p,w6p,w7p,w8p};
-Vp = train_data*Wp;
-disp([newline 'Errors for individual classifiers with PCA 85'])
-testc(test_data,Vp);
-
-%% Using Dissimilarity
-pr = proxm([],'d',2);
-
-w2pr = pr*w2;
-w3pr = pr*qdc;
-w4pr = pr*knnc;
-w5pr = pr*parzenc;
-w6pr = pr*svc;
-w7pr = pr*fisherc;
-w8pr = pr*naivebc;
-
-Wpr = {w2pr,w3pr,w4pr,w5pr,w6pr,w7pr,w8pr};
-Vpr = train_data*Wpr;
-disp([newline 'Errors for individual classifiers with Dissimiarity'])
-testc(test_data,Vpr);
 
 %% Custom: Logistic Regression %%
 [train_data, test_data] = gendat(dataset, 0.5);
