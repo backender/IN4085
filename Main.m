@@ -4,7 +4,12 @@
 %  ------------
 % 
 %  This file contains ...
-%
+%  Parameters:
+%   - pixels
+%   - classifier parameters
+%   - pca
+%   - feature selection
+%   - dissimilarity
 
 %% Initialization
 clear ; close all; clc
@@ -21,26 +26,26 @@ imgPixel = [imgSize imgSize];
 
 rdata = prnist([0:9],[1:5:1000]);
 disp([newline 'Data ready'])
-pause;
+%pause;
 
 %rdata = im_rotate(rdata, 220);
 rdata = im_box(rdata,1,0) ; %remove empty empty border columns and rows 
 rdata = im_resize(rdata, imgPixel); % resize
 dataset = prdataset(rdata);%convert to dataset
 disp([newline 'Dataset prepared and ready'])
-pause;
+%pause;
 
 %% Pixel Representation %%
-feature_dataset = im_features(dataset, 'all');
-[train_data, test_data] = gendat(feature_dataset, 0.5);
+%feature_dataset = im_features(dataset, 'all');
+[train_data, test_data] = gendat(dataset, 0.5);
 
 %w = ldc(f_train_data);
 %acc = 1 - (f_test_data * w * testc)
 
 w2 = ldc;
 w3 = qdc;
-w4 = knnc;
-w5 = parzenc;
+w4 = knnc([],3);
+w5 = parzenc([],0.25);
 w6 = svc;
 w7 = fisherc;
 w8 = naivebc;
@@ -54,8 +59,18 @@ V = train_data*W;
 disp([newline 'Errors for individual classifiers'])
 testc(test_data,V);
 
+%%
+disp([newline 'Errors for combined parzen&svc classifiers']);
+Vcomb = train_data*([w5,w6]*{prodc,meanc,medianc,maxc,minc,votec});
+testc(test_data,Vcomb);
+
+%%
+disp([newline 'Errors for combined knn&svc classifiers']);
+Vcomb2 = train_data*([w4,w6]*{prodc,meanc,medianc,maxc,minc,votec});
+testc(test_data,Vcomb2);
+
 %% Feature selection
-% featureReduction=5;
+% featureReduction=50;
 % Fi =train_data*featseli([],'in-in',featureReduction);
 % Ff =train_data*featself([],'in-in',featureReduction);
 % Fo =train_data*featselo([],'in-in',featureReduction);
@@ -93,53 +108,27 @@ testc(test_data,V);
 
 %% W/ PCA 85%
 p = pcam([],0.85);
-
-w2p = p*w2;
-w3p = p*qdc;
-w4p = p*knnc;
-w5p = p*parzenc;
-w6p = p*svc;
-w7p = p*fisherc;
-w8p = p*naivebc;
-
-Wp = {w2p,w3p,w4p,w5p,w6p,w7p,w8p};
+Wp = p*{w2,w3,w4,w5,w6,w7,w8};
 Vp = train_data*Wp;
 disp([newline 'Errors for individual classifiers with PCA 85'])
 testc(test_data,Vp);
 
 %% W/ PCA 99%
-p = pcam([],0.99);
-
-w2p = p*w2;
-w3p = p*qdc;
-w4p = p*knnc;
-w5p = p*parzenc;
-w6p = p*svc;
-w7p = p*fisherc;
-w8p = p*naivebc;
-
-Wp = {w2p,w3p,w4p,w5p,w6p,w7p,w8p};
-Vp = train_data*Wp;
-disp([newline 'Errors for individual classifiers with PCA 85'])
-testc(test_data,Vp);
+% p = pcam([],0.99);
+% Wp = p*{w2,w3,w4,w5,w6,w7,w8};
+% Vp = train_data*Wp;
+% disp([newline 'Errors for individual classifiers with PCA 99'])
+% testc(test_data,Vp);
 
 %% Using Dissimilarity
-pr = proxm([],'d',2);
-
-w2pr = pr*w2;
-w3pr = pr*qdc;
-w4pr = pr*knnc;
-w5pr = pr*parzenc;
-w6pr = pr*svc;
-w7pr = pr*fisherc;
-w8pr = pr*naivebc;
-
-Wpr = {w2pr,w3pr,w4pr,w5pr,w6pr,w7pr,w8pr};
+%pr = proxm([],'d',2);
+pr = distm;
+Wpr = pr*{w2,w3,w4,w5,w6,w7,w8};
 Vpr = train_data*Wpr;
 disp([newline 'Errors for individual classifiers with Dissimiarity'])
 testc(test_data,Vpr);
 
-%% Custom: Logistic Regression %%
+%% Custom: Logistic Regression dataset preprocessing %%
 [train_data, test_data] = gendat(dataset, 0.5);
 
 X = getdata(train_data);
