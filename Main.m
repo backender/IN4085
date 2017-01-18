@@ -71,40 +71,23 @@ testc(test_data,Vcomb2);
 
 %% Feature selection
 % featureReduction=50;
-% Fi =train_data*featseli([],'in-in',featureReduction);
-% Ff =train_data*featself([],'in-in',featureReduction);
-% Fo =train_data*featselo([],'in-in',featureReduction);
-% 
-% Vi = train_data*Fi;
-% Vf = train_data*Ff;
-% Vo = train_data*Fo;
-% 
+% Fi =train_data*featseli([],'NN',featureReduction);
+% Vi = train_data * Fi * W;
 % Ti = test_data*Fi;
-% Tf = test_data*Ff;
-% To = test_data*Fo;
-% 
 % disp([newline 'Errors with featseli'])
 % testc(Ti,Vi);
+% 
+% Ff =train_data*featself([],'NN',featureReduction);
+% Vf = train_data * Ff * W;
+% Tf = test_data*Ff;
 % disp([newline 'Errors with featself'])
 % testc(Tf,Vf);
+% 
+% Fo =train_data*featselo([],'NN',featureReduction);
+% Vo = train_data * Fo * W;
+% To = test_data*Fo;
 % disp([newline 'Errors with featselo'])
 % testc(To,Vo);
-
-% %invidfeatures_mapping = featseli(train_data);
-% %fi_train_data = train_data * invidfeatures_mapping;
-% %fi_test_data = test_data * invidfeatures_mapping;
-% %V2 = f_train_data*W;
-% %disp([newline 'Errors with featureself for individual classifiers'])
-% %testc(f_test_data,V2);
-% %
-% %VALL = [V2{:}];
-% %         % Define combiners
-% % WC = {prodc,meanc,medianc,maxc,minc,votec};
-% %         % Combine (result is cell array of combined classifiers)
-% % VC = VALL * WC;
-% %         % Test them all
-% % disp([newline 'Errors for combining rules with featureself'])
-% %testc(f_test_data,VC)
 
 %% W/ PCA 85%
 p = pcam([],0.85);
@@ -129,7 +112,6 @@ disp([newline 'Errors for individual classifiers with Dissimiarity'])
 testc(test_data,Vpr);
 
 %% Custom: Logistic Regression dataset preprocessing %%
-[train_data, test_data] = gendat(dataset, 0.5);
 
 X = getdata(train_data);
 y = getlab(train_data);
