@@ -143,6 +143,10 @@ lambda = 0.1;
 
 Xtest = getdata(test_data);
 ytest = getlab(test_data);
+% In order to validate predictions we confront the labels 
+% with the prediction. Therefore the format needs to be the same. 
+% That is, ?digit_X"(:,7) would return ?X?. Where X is a number 
+% between 0-9
 ytest = str2num(ytest(:,7));
 ytest = arrayfun(@(i) zeroToTen(i), ytest);
 
