@@ -24,12 +24,12 @@ imgPixel = [imgSize imgSize];
 
 %% =========== Part 1: Data Selection & Preprocessing =============
 
-rdata = prnist([0:9],[1:5:1000]);
+rdata = prnist([0:9],[1:25:1000]);
 disp([newline 'Data ready'])
 %pause;
 
 %rdata = im_rotate(rdata, 220);
-rdata = im_box(rdata,1,0) ; %remove empty empty border columns and rows 
+rdata = im_box(rdata,1,0); %remove empty empty border columns and rows 
 rdata = im_resize(rdata, imgPixel); % resize
 dataset = prdataset(rdata);%convert to dataset
 disp([newline 'Dataset prepared and ready'])
@@ -152,3 +152,22 @@ pred = predictOneVsAll(all_theta, Xtest);
      
 fprintf('\nTraining Set Accuracy: %f\n', mean(double(pred == ytest)) * 100);
 
+%% LIVE TEST
+
+% Read images from folder
+I = imread('/Users/marc/Documents/MATLAB/PRProject/digits/0_0.png');
+
+% 1. Rgb image as grayscale
+% 2. Binarize the image such representation consists of [0, 1]
+% 3. Complement as prnist training set was complemented as well
+Ibw = imcomplement(imbinarize(rgb2gray(I)));
+%figure
+%imshowpair(I,Ibw,'montage')
+
+% Resize to same format as training data
+Img = im_resize(Ibw, imgPixel);
+
+%ImgVec = im2obj(Img);
+ImgVec = Img(:)';
+
+% Predict ...?
