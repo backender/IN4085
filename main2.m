@@ -57,3 +57,4 @@ test_data = prdataset(data, labels);
 Vp = train_data*Wp;
 disp([newline 'Prediction for live test with PCA 85'])
 testc(test_data, Vp)
+test_data*Vp
