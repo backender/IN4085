@@ -43,7 +43,7 @@ I = imread('C:\Users\Ron\git\IN4085\digits\1_0.png');
 % 3. Complement as prnist training set was complemented as well
 Ibw = imcomplement(imbinarize(rgb2gray(I)));
 %figure
-%imshowpair(I,Ibw,'montage')
+%imshowpair(I,Ibw,'montage')git
 
 % Resize to same format as training data
 Img = im_resize(Ibw, imgPixel);
