@@ -24,7 +24,7 @@ imgPixel = [imgSize imgSize];
 
 %% =========== Part 1: Data Selection & Preprocessing =============
 
-rdata = prnist([0:9],[1:25:1000]);
+rdata = prnist([0:9],[1:50:1000]);
 disp([newline 'Data ready'])
 %pause;
 
@@ -48,13 +48,16 @@ w4 = knnc([],3);
 w5 = parzenc([],0.25);
 w6 = svc;
 w7 = fisherc;
-w8 = naivebc;
+w8 = svc(proxm('p',5));
+w9 = svc(proxm('h'));
+w10 = svc(proxm('e'));
+w11 = svc(proxm('s'));
 
 %w10 = [w2,w3,w4,w5,w6,w7,w8]*{prodc,meanc,medianc,maxc,minc,votec};
 
 
 %%
-W = {w2,w3,w4,w5,w6,w7,w8};%,w10};
+W = {w2,w3,w4,w5,w6,w7,w8,w9,w10,w11};
 V = train_data*W;
 disp([newline 'Errors for individual classifiers'])
 testc(test_data,V);
@@ -70,6 +73,27 @@ Vcomb2 = train_data*([w4,w6]*{prodc,meanc,medianc,maxc,minc,votec});
 testc(test_data,Vcomb2);
 
 %% Feature selection
+% featureReduction=500;
+% Fi =train_data*featseli([],'NN',featureReduction);
+% Vi = train_data * Fi * W;
+% Ti = test_data*Fi;
+% disp([newline 'Errors with featseli'])
+% testc(Ti,Vi);
+% 
+% featureReduction=200;
+% Fi =train_data*featseli([],'NN',featureReduction);
+% Vi = train_data * Fi * W;
+% Ti = test_data*Fi;
+% disp([newline 'Errors with featseli'])
+% testc(Ti,Vi);
+% 
+% featureReduction=100;
+% Fi =train_data*featseli([],'NN',featureReduction);
+% Vi = train_data * Fi * W;
+% Ti = test_data*Fi;
+% disp([newline 'Errors with featseli'])
+% testc(Ti,Vi);
+% 
 % featureReduction=50;
 % Fi =train_data*featseli([],'NN',featureReduction);
 % Vi = train_data * Fi * W;
@@ -77,6 +101,13 @@ testc(test_data,Vcomb2);
 % disp([newline 'Errors with featseli'])
 % testc(Ti,Vi);
 % 
+% featureReduction=25;
+% Fi =train_data*featseli([],'NN',featureReduction);
+% Vi = train_data * Fi * W;
+% Ti = test_data*Fi;
+% disp([newline 'Errors with featseli'])
+% testc(Ti,Vi);
+
 % Ff =train_data*featself([],'NN',featureReduction);
 % Vf = train_data * Ff * W;
 % Tf = test_data*Ff;
@@ -89,24 +120,38 @@ testc(test_data,Vcomb2);
 % disp([newline 'Errors with featselo'])
 % testc(To,Vo);
 
+%% W/ PCA 25%
+p = pcam([],0.25);
+Wp = p*W;
+Vp = train_data*Wp;
+disp([newline 'Errors for individual classifiers with PCA 25'])
+testc(test_data,Vp);
+
 %% W/ PCA 85%
 p = pcam([],0.85);
-Wp = p*{w2,w3,w4,w5,w6,w7,w8};
+Wp = p*W;
 Vp = train_data*Wp;
 disp([newline 'Errors for individual classifiers with PCA 85'])
 testc(test_data,Vp);
 
+%% W/ PCA 50%
+p = pcam([],0.5);
+Wp = p*W;
+Vp = train_data*Wp;
+disp([newline 'Errors for individual classifiers with PCA 50'])
+testc(test_data,Vp);
+
 %% W/ PCA 99%
-% p = pcam([],0.99);
-% Wp = p*{w2,w3,w4,w5,w6,w7,w8};
-% Vp = train_data*Wp;
-% disp([newline 'Errors for individual classifiers with PCA 99'])
-% testc(test_data,Vp);
+p = pcam([],0.99);
+Wp = p*W;
+Vp = train_data*Wp;
+disp([newline 'Errors for individual classifiers with PCA 99'])
+testc(test_data,Vp);
 
 %% Using Dissimilarity
 %pr = proxm([],'d',2);
 pr = distm;
-Wpr = pr*{w2,w3,w4,w5,w6,w7,w8};
+Wpr = pr*W;
 Vpr = train_data*Wpr;
 disp([newline 'Errors for individual classifiers with Dissimiarity'])
 testc(test_data,Vpr);
