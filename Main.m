@@ -55,17 +55,68 @@ w11 = svc(proxm('s'));
 
 %w10 = [w2,w3,w4,w5,w6,w7,w8]*{prodc,meanc,medianc,maxc,minc,votec};
 
+%% LIVE TEST
+
+W = {w2,w3,w4,w5,w6,w7};
+V = train_data*W;
+
+for d = 0:5 % digits
+
+    set = prdataset();
+    set.name = 'LIVE';
+
+    for i = 0:9 % number of samples per digit
+
+        % Read images from folder
+        I = imread(sprintf('/Users/marc/Documents/MATLAB/PRProject/digits/%d_%d.png', d, i));
+
+        % 1. Rgb image as grayscale
+        % 2. Binarize the image such representation consists of [0, 1]
+        % 3. Complement as prnist training set was complemented as well
+        Ibw = imcomplement(imbinarize(rgb2gray(I)));
+        %figure
+        %imshowpair(I,Ibw,'montage')
+
+        Img = Ibw;
+
+        % Remove zeros from rows and columns (alternative to im_box, which doesn't work with matrices)
+        Img( ~any(Img,2), : ) = [];  %rows
+        Img( :, ~any(Img,1) ) = [];  %columns
+
+        % Resize to same format as training data
+        Img = im_resize(Img, imgPixel);
+
+        %figure
+        %show(Img)
+
+        ImgVec = im2obj(Img);
+        set = [set; ImgVec];
+
+    end
+
+    %labels = repmat({sprintf('digit_%d', d)},1,i); % i times digit d
+    ImgSet = setlabels(set,sprintf('digit_%d', d));
+
+
+disp([newline sprintf('Live test testc for digit %d', d)])
+testc(ImgSet, V); % test against nist trained
+
+disp([newline sprintf('Live test crossval for digit %d', d)])
+[train_imgset, test_imgset] = gendat(ImgSet, 0.7);
+prcrossval(train_imgset,W); % crossval with custom-handwritten only
+
+end
+pause;
 
 %%
-W = {w2,w3,w4,w5,w6,w7,w8,w9,w10,w11};
-V = train_data*W;
+W = {w2,w3,w4,w5,w6,w7};
+%V = train_data*W;
 disp([newline 'Errors for individual classifiers'])
-testc(test_data,V);
+prcrossval(train_data,W);
 
 %%
 disp([newline 'Errors for combined parzen&svc classifiers']);
-Vcomb = train_data*([w5,w6]*{prodc,meanc,medianc,maxc,minc,votec});
-testc(test_data,Vcomb);
+prcrossval(train_data,([w5,w6]*{prodc,meanc,medianc,maxc,minc,votec}));
 
 %%
 disp([newline 'Errors for combined knn&svc classifiers']);
@@ -123,38 +174,33 @@ testc(test_data,Vcomb2);
 %% W/ PCA 25%
 p = pcam([],0.25);
 Wp = p*W;
-Vp = train_data*Wp;
 disp([newline 'Errors for individual classifiers with PCA 25'])
-testc(test_data,Vp);
+prcrossval(train_data,Wp);
 
 %% W/ PCA 85%
 p = pcam([],0.85);
 Wp = p*W;
-Vp = train_data*Wp;
 disp([newline 'Errors for individual classifiers with PCA 85'])
-testc(test_data,Vp);
+prcrossval(train_data,Wp);
 
 %% W/ PCA 50%
 p = pcam([],0.5);
 Wp = p*W;
-Vp = train_data*Wp;
 disp([newline 'Errors for individual classifiers with PCA 50'])
-testc(test_data,Vp);
+prcrossval(train_data,Wp);
 
 %% W/ PCA 99%
 p = pcam([],0.99);
 Wp = p*W;
-Vp = train_data*Wp;
 disp([newline 'Errors for individual classifiers with PCA 99'])
-testc(test_data,Vp);
+prcrossval(train_data,Wp);
 
 %% Using Dissimilarity
 %pr = proxm([],'d',2);
 pr = distm;
 Wpr = pr*W;
-Vpr = train_data*Wpr;
 disp([newline 'Errors for individual classifiers with Dissimiarity'])
-testc(test_data,Vpr);
+prcrossval(train_data,Wp);
 
 %% Custom: Logistic Regression dataset preprocessing %%
 
@@ -201,22 +247,3 @@ pred = predictOneVsAll(all_theta, Xtest);
      
 fprintf('\nTraining Set Accuracy: %f\n', mean(double(pred == ytest)) * 100);
 
-%% LIVE TEST
-
-% Read images from folder
-I = imread('/Users/marc/Documents/MATLAB/PRProject/digits/0_0.png');
-
-% 1. Rgb image as grayscale
-% 2. Binarize the image such representation consists of [0, 1]
-% 3. Complement as prnist training set was complemented as well
-Ibw = imcomplement(imbinarize(rgb2gray(I)));
-%figure
-%imshowpair(I,Ibw,'montage')
-
-% Resize to same format as training data
-Img = im_resize(Ibw, imgPixel);
-
-%ImgVec = im2obj(Img);
-ImgVec = Img(:)';
-
-% Predict ...?
