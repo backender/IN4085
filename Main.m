@@ -63,7 +63,7 @@ V = train_data*W;
 setTotal = prdataset();
 setTotal.name = 'LIVE Total';
 
-for d = 0:5 % digits
+for d = 0:9 % digits
 
     set = prdataset();
     set.name = 'LIVE';
@@ -109,9 +109,15 @@ end
 disp([newline sprintf('Total Live test testc for digits 0-%d', d)])
 testc(setTotal, V); % test against nist trained
 
+disp([newline sprintf('Total Live test testc for digit 0-%d with combined classifiers', d)])
+Vcomb = train_data*([w4,w7]*{prodc,meanc,medianc,maxc,minc,votec});
+testc(setTotal, Vcomb); % test against nist trained
+
 disp([newline sprintf('Total Live test crossval for digit 0-%d', d)])
 prcrossval(setTotal,W); % crossval with custom-handwritten only
 
+disp([newline sprintf('Total Live test crossval for digit 0-%d with combined classifiers', d)])
+prcrossval(train_data,([w2,w3,w4,w5,w6,w7]*{prodc,meanc,medianc,maxc,minc,votec}));
 
 pause;
 
