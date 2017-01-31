@@ -60,6 +60,9 @@ w11 = svc(proxm('s'));
 W = {w2,w3,w4,w5,w6,w7};
 V = train_data*W;
 
+setTotal = prdataset();
+setTotal.name = 'LIVE Total';
+
 for d = 0:5 % digits
 
     set = prdataset();
@@ -96,16 +99,20 @@ for d = 0:5 % digits
 
     %labels = repmat({sprintf('digit_%d', d)},1,i); % i times digit d
     ImgSet = setlabels(set,sprintf('digit_%d', d));
-
+    setTotal = [setTotal; ImgSet];
 
 disp([newline sprintf('Live test testc for digit %d', d)])
 testc(ImgSet, V); % test against nist trained
 
-disp([newline sprintf('Live test crossval for digit %d', d)])
-[train_imgset, test_imgset] = gendat(ImgSet, 0.7);
-prcrossval(train_imgset,W); % crossval with custom-handwritten only
-
 end
+
+disp([newline sprintf('Total Live test testc for digits 0-%d', d)])
+testc(setTotal, V); % test against nist trained
+
+disp([newline sprintf('Total Live test crossval for digit 0-%d', d)])
+prcrossval(setTotal,W); % crossval with custom-handwritten only
+
+
 pause;
 
 %%
