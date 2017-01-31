@@ -71,7 +71,7 @@ for d = 0:9 % digits
     for i = 0:9 % number of samples per digit
 
         % Read images from folder
-        I = imread(sprintf('/Users/marc/Documents/MATLAB/PRProject/digits/%d_%d.png', d, i));
+        I = imread(sprintf('%s/digits/%d_%d.png', pwd, d, i));
 
         % 1. Rgb image as grayscale
         % 2. Binarize the image such representation consists of [0, 1]
@@ -108,10 +108,6 @@ end
 
 disp([newline sprintf('Total Live test testc for digits 0-%d', d)])
 testc(setTotal, V); % test against nist trained
-
-disp([newline sprintf('Total Live test testc for digit 0-%d with combined classifiers', d)])
-Vcomb = train_data*([w4,w7]*{prodc,meanc,medianc,maxc,minc,votec});
-testc(setTotal, Vcomb); % test against nist trained
 
 disp([newline sprintf('Total Live test crossval for digit 0-%d', d)])
 prcrossval(setTotal,W); % crossval with custom-handwritten only
